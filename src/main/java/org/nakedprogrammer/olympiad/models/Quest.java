@@ -14,16 +14,17 @@ import java.util.List;
 @NoArgsConstructor
 public class Quest {
 
-    @Id
+    @Id @GeneratedValue
     private Long id;
 
     private String name;
 
     private String description;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "quest")
     private List<Translation> translations;
 
     @ManyToOne
-    private User user;
+    @JoinColumn(name = "userok_id")
+    private Userok userok;
 }

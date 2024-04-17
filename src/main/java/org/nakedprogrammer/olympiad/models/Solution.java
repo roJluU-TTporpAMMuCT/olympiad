@@ -1,9 +1,6 @@
 package org.nakedprogrammer.olympiad.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,14 +12,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Solution {
 
-    @Id
+    @Id @GeneratedValue
     private Long id;
 
     private String code;
 
     @ManyToOne
+    @JoinColumn(name = "translation_id")
     private Translation translation;
 
     @ManyToOne
-    private User user;
+    @JoinColumn(name = "userok_id")
+    private Userok userok;
 }

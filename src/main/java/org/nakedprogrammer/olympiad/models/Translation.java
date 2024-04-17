@@ -14,21 +14,28 @@ import java.util.List;
 @NoArgsConstructor
 public class Translation {
 
-    @Id
+    @Id @GeneratedValue
     private Long id;
 
     private String lang;
+
+    @Transient
+    private String sample_solution;
+
+    private String className;
 
     private String visibleTestCode;
 
     private String hiddenTestCode;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "translation")
     private List<Solution> solutions;
 
     @ManyToOne
+    @JoinColumn(name = "quest_id")
     private Quest quest;
 
     @ManyToOne
-    private User user;
+    @JoinColumn(name = "userok_id")
+    private Userok userok;
 }

@@ -1,14 +1,9 @@
 package org.nakedprogrammer.olympiad.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
@@ -17,25 +12,25 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails {
+public class Userok {
 
-    @Id
+    @Id @GeneratedValue
     private Long id;
 
     private String password;
 
     private String username;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userok")
     private List<Quest> quests;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userok")
     private List<Translation> translations;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userok")
     private List<Solution> solutions;
 
-
+    /*
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
@@ -61,5 +56,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
+    }*/
 }
