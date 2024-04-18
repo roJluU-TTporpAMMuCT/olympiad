@@ -24,6 +24,8 @@ public class Translation {
 
     private String className;
 
+    private Integer timelimit;
+
     private String visibleTestCode;
 
     private String hiddenTestCode;
