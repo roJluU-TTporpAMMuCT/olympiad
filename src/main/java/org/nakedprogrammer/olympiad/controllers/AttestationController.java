@@ -55,7 +55,7 @@ public class AttestationController {
 
     @PostMapping("quest/{questName}/{lang}")
     public ResponseEntity createSolution(@PathVariable String questName, @PathVariable String lang, @RequestBody Solution solution){
-        Translation translation = transRep.findAnyByQuest_IDAndLang(questRep.findAnyByName(questName).getId(), lang);
+        Translation translation = transRep.findAnyByQuest_idAndLang(questRep.findAnyByName(questName).getId(), lang);
         ResponseEntity<String> resp = this.attest(translation.getClassName(),
                 solution.getCode(), translation.getVisibleTestCode(), translation.getTimelimit());
         if(resp.getBody().equals("[]")){

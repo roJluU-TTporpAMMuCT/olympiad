@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TranslationRepo extends JpaRepository<Translation, Long> {
-    Translation findAnyByQuest_IDAndLang(Long quest_id, String lang);
+    Translation findAnyByQuest_idAndLang(Long quest_id, String lang);
 }
