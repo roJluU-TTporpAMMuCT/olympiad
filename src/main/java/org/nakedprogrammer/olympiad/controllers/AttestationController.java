@@ -44,9 +44,7 @@ public class AttestationController {
         System.out.println(translation.getClassName());
         ResponseEntity<String> resp = this.attest(translation.getClassName(), translation.getSample_solution(), translation.getVisibleTestCode(),
                 translation.getTimelimit());
-        System.out.println(resp.getBody());
         if(resp.getBody().equals("[]")) {
-            System.out.println("Saved");
             translation.setQuest(questRep.findAnyByName(questName));
             transRep.save(translation);
         }
@@ -59,7 +57,6 @@ public class AttestationController {
         ResponseEntity<String> resp = this.attest(translation.getClassName(),
                 solution.getCode(), translation.getVisibleTestCode(), translation.getTimelimit());
         if(resp.getBody().equals("[]")){
-            System.out.println("Saved");
             solution.setTranslation(translation);
             solutionRep.save(solution);
         }
