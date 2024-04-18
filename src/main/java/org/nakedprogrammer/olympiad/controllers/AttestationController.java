@@ -41,7 +41,6 @@ public class AttestationController {
 
     @PostMapping("quest/{questName}")
     public ResponseEntity createTranslation(@PathVariable String questName, @RequestBody Translation translation) {
-        System.out.println(translation.getClassName());
         ResponseEntity<String> resp = this.attest(translation.getClassName(), translation.getSample_solution(), translation.getVisibleTestCode(),
                 translation.getTimelimit());
         if(resp.getBody().equals("[]")) {
