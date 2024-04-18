@@ -34,12 +34,7 @@ public class AttestationController {
     SolutionRepo solutionRep;
     RestClient restClient;
 
-    @PostMapping("quest")
-    public ResponseEntity createQuest(@RequestBody Quest quest){
-        return ResponseEntity.ok(questRep.save(quest) );
-    }
-
-    @PostMapping("quest/{questName}")
+    @PostMapping("quests/{questName}")
     public ResponseEntity createTranslation(@PathVariable String questName, @RequestBody Translation translation) {
         ResponseEntity<String> resp = this.attest(translation.getClassName(), translation.getSample_solution(), translation.getVisibleTestCode(),
                 translation.getTimelimit());
@@ -50,7 +45,7 @@ public class AttestationController {
         return ResponseEntity.ok(resp.getBody());
     }
 
-    @PostMapping("quest/{questName}/{lang}")
+    @PostMapping("quests/{questName}/{lang}")
     public ResponseEntity createSolution(@PathVariable String questName, @PathVariable String lang, @RequestBody Solution solution){
         Translation translation = transRep.findAnyByQuest_idAndLang(questRep.findAnyByName(questName).getId(), lang);
         ResponseEntity<String> resp = this.attest(translation.getClassName(),
