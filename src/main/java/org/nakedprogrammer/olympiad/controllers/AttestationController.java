@@ -1,27 +1,20 @@
 package org.nakedprogrammer.olympiad.controllers;
 
 import lombok.AllArgsConstructor;
-import org.nakedprogrammer.olympiad.models.Quest;
 import org.nakedprogrammer.olympiad.models.Solution;
 import org.nakedprogrammer.olympiad.models.Translation;
 import org.nakedprogrammer.olympiad.repos.QuestRepo;
 import org.nakedprogrammer.olympiad.repos.SolutionRepo;
 import org.nakedprogrammer.olympiad.repos.TranslationRepo;
 import org.nakedprogrammer.olympiad.repos.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 @RestController
@@ -35,7 +28,7 @@ public class AttestationController {
     RestClient restClient;
 
     @PostMapping("quests/{questName}")
-    public ResponseEntity createTranslation(@PathVariable String questName, @RequestBody Translation translation) {
+    public ResponseEntity<String> createTranslation(@PathVariable String questName, @RequestBody Translation translation) {
         ResponseEntity<String> resp = this.attest(translation.getClassName(), translation.getSample_solution(), translation.getVisibleTestCode(),
                 translation.getTimelimit());
         if(resp.getBody().equals("[]")) {
@@ -46,7 +39,7 @@ public class AttestationController {
     }
 
     @PostMapping("quests/{questName}/{lang}")
-    public ResponseEntity createSolution(@PathVariable String questName, @PathVariable String lang, @RequestBody Solution solution){
+    public ResponseEntity<String> createSolution(@PathVariable String questName, @PathVariable String lang, @RequestBody Solution solution){
         Translation translation = transRep.findAnyByQuest_idAndLang(questRep.findAnyByName(questName).getId(), lang);
         ResponseEntity<String> resp = this.attest(translation.getClassName(),
                 solution.getCode(), translation.getVisibleTestCode(), translation.getTimelimit());
