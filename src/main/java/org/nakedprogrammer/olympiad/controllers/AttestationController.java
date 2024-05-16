@@ -3,6 +3,8 @@ package org.nakedprogrammer.olympiad.controllers;
 import lombok.AllArgsConstructor;
 import org.nakedprogrammer.olympiad.models.*;
 import org.nakedprogrammer.olympiad.repos.*;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +23,7 @@ public class AttestationController {
     TranslationRepo transRep;
     SolutionRepo solutionRep;
     RestClient restClient;
+    DiscoveryClient discClient;
 
     @PostMapping("quest")
     public ResponseEntity<String> createQuest(@RequestBody Quest quest, @AuthenticationPrincipal UserDetails user){
@@ -57,8 +60,8 @@ public class AttestationController {
     }
 
     private AttestResult attest(String lang, String className, String sourceCode, String testSourceCode, Integer timelimit){
-        Map<String,Integer> ports = Map.of("java", 8080, "js", 8081);
-        return restClient.post().uri("http://localhost:" + ports.get(lang))
+        ServiceInstance inst = discClient.getInstances(lang + "-attestation-micro").get(0);
+        return restClient.post().uri("http://" + inst.getHost() + ":" + inst.getPort())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("className", className != null ? className : "null", "sourceCode", sourceCode,
                         "testSourceCode", testSourceCode, "timelimit", timelimit)).retrieve().toEntity(AttestResult.class).getBody();
