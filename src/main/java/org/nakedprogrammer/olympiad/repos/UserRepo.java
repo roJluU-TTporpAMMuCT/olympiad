@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepo extends JpaRepository<Userok, Long> {
+
+    Userok findAnyByUsername(String username);
 }

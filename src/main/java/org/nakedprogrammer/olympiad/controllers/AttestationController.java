@@ -1,18 +1,13 @@
 package org.nakedprogrammer.olympiad.controllers;
 
 import lombok.AllArgsConstructor;
-import org.nakedprogrammer.olympiad.models.Solution;
-import org.nakedprogrammer.olympiad.models.Translation;
-import org.nakedprogrammer.olympiad.repos.QuestRepo;
-import org.nakedprogrammer.olympiad.repos.SolutionRepo;
-import org.nakedprogrammer.olympiad.repos.TranslationRepo;
-import org.nakedprogrammer.olympiad.repos.UserRepo;
+import org.nakedprogrammer.olympiad.models.*;
+import org.nakedprogrammer.olympiad.repos.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
 import java.util.Map;
@@ -27,33 +22,45 @@ public class AttestationController {
     SolutionRepo solutionRep;
     RestClient restClient;
 
+    @PostMapping("quest")
+    public ResponseEntity<String> createQuest(@RequestBody Quest quest, @AuthenticationPrincipal UserDetails user){
+        quest.setUserok(userRep.findAnyByUsername(user.getUsername()));
+        questRep.save(quest);
+        return ResponseEntity.ok("[]");
+    }
+
     @PostMapping("quests/{questName}")
-    public ResponseEntity<String> createTranslation(@PathVariable String questName, @RequestBody Translation translation) {
-        ResponseEntity<String> resp = this.attest(translation.getClassName(), translation.getSample_solution(), translation.getVisibleTestCode(),
-                translation.getTimelimit());
-        if(resp.getBody().equals("[]")) {
+    public ResponseEntity<String> createTranslation(@PathVariable String questName, @RequestBody Translation translation,
+                                                    @AuthenticationPrincipal UserDetails user) {
+        AttestResult resp = this.attest(translation.getLang(), translation.getClassName(), translation.getSample_solution(),
+                                                    translation.getVisibleTestCode(), translation.getTimelimit());
+        if(resp.getPass().equals(true)) {
             translation.setQuest(questRep.findAnyByName(questName));
+            translation.setUserok(userRep.findAnyByUsername(user.getUsername()));
             transRep.save(translation);
         }
-        return ResponseEntity.ok(resp.getBody());
+        return ResponseEntity.ok(resp.getText());
     }
 
     @PostMapping("quests/{questName}/{lang}")
-    public ResponseEntity<String> createSolution(@PathVariable String questName, @PathVariable String lang, @RequestBody Solution solution){
+    public ResponseEntity<String> createSolution(@PathVariable String questName, @PathVariable String lang, @RequestBody Solution solution,
+                                                 @AuthenticationPrincipal UserDetails user){
         Translation translation = transRep.findAnyByQuest_idAndLang(questRep.findAnyByName(questName).getId(), lang);
-        ResponseEntity<String> resp = this.attest(translation.getClassName(),
-                solution.getCode(), translation.getVisibleTestCode(), translation.getTimelimit());
-        if(resp.getBody().equals("[]")){
+        AttestResult resp = this.attest(translation.getLang(), translation.getClassName(), solution.getCode(),
+                                        translation.getVisibleTestCode(), translation.getTimelimit());
+        if(resp.getPass().equals(true)){
             solution.setTranslation(translation);
+            solution.setUserok(userRep.findAnyByUsername(user.getUsername()));
             solutionRep.save(solution);
         }
-        return ResponseEntity.ok(resp.getBody());
+        return ResponseEntity.ok(resp.getText());
     }
 
-    private ResponseEntity<String> attest(String className, String sourceCode, String testSourceCode, Integer timelimit){
-        return restClient.post().uri("http://localhost:8080")
+    private AttestResult attest(String lang, String className, String sourceCode, String testSourceCode, Integer timelimit){
+        Map<String,Integer> ports = Map.of("java", 8080, "js", 8081);
+        return restClient.post().uri("http://localhost:" + ports.get(lang))
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Map.of("className", className, "sourceCode", sourceCode,
-                        "testSourceCode", testSourceCode, "timelimit", timelimit)).retrieve().toEntity(String.class);
+                .body(Map.of("className", className != null ? className : "null", "sourceCode", sourceCode,
+                        "testSourceCode", testSourceCode, "timelimit", timelimit)).retrieve().toEntity(AttestResult.class).getBody();
     }
 }
