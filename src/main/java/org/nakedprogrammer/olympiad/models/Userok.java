@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
@@ -14,7 +12,7 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Userok implements UserDetails {
+public class Userok{
 
     @Id @GeneratedValue
     private Long id;
@@ -31,29 +29,4 @@ public class Userok implements UserDetails {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userok")
     private List<Solution> solutions;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }

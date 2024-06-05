@@ -26,8 +26,10 @@ public class Translation {
 
     private Integer timelimit;
 
+    @Column(length = 10000)
     private String visibleTestCode;
 
+    @Column(length = 10000)
     private String hiddenTestCode;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "translation")

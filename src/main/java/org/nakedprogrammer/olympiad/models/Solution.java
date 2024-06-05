@@ -15,6 +15,7 @@ public class Solution {
     @Id @GeneratedValue
     private Long id;
 
+    @Column(length = 10000)
     private String code;
 
     @ManyToOne
